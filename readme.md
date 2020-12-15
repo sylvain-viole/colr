@@ -5,7 +5,9 @@
 ## Project :
 It takes any targeted DOM content, matches it with regexp, applies style and injects it back.
 
-Right now it handles only JS partially.
+![colr example 1](https://github.com/sylvavio/colr/blob/main/examples/colr-example-1.png)
+
+Right now it handles JS and PHP partially.
 Its a work in progress.
 
 #
