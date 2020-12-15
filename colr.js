@@ -7,7 +7,28 @@
 
 Simple Code colorizer. 
 Beta version.
+
+How it works :
+- reads content from any DOM element with "colr" class,
+- Parses it into array "regexpMatches" depending on REGEXP list object "themes",
+- The array logs indexes as well,
+- Each index of matched content is pushed to an exclusion Array, that means that a content can only be checked for
+regexp, once.
+- Programm checks for regexp from top to bottom,
+- Style is applied to each matched item depending on its regexp,
+- Non matched content is then added back to the array at its right place,
+- final Array is then joined to a string and inserted as the new content.
+
+
+KNOWN ISSUES :
+- multi-line comments not supported
+- REGEXP lookarounds not supported
+- ...
+
+
 */
+
+ 
 
 /* Themes are applied from top to bottom, they are not stackable.
 So the order is important. */
@@ -56,16 +77,21 @@ const themes = [
         },
     },
     {
-        regexp: /[a-z,A-Z,1-9,_]+\s*?\([a-z,A-Z,1-9,\,\s]*\)/,
+        regexp: /[a-z,A-Z,1-9,_]+\s*?\([a-zA-Z1-9\s\'\(\)]*\)/,
         action: function (e) {
             return `<span class = "colr-function">${e}</span>`;
+        },
+    },
+    {
+        regexp: /[{}\()]|\[|\]|[,;]/,
+        action: function (e) {
+            return `<span class = "colr-special">${e}</span>`;
         },
     },
 ];
 
 
-let target = $("#colorize");
-let content = target.html();
+let targets = document.querySelectorAll('.colr');
 
 /* ********************* FUNCTIONS ******************** */
 
@@ -161,38 +187,44 @@ let finalArray = []
 
 /* ********************* PROCESS ******************** */
 
-// Checks content for match in each theme
-themes.forEach((theme) => {
-    checkRegexp(0,theme.regexp)
+// loops in each DOM element matching classnass "colr".
+targets.forEach((target) => {
+    content = target.innerHTML;
+    
+    
+    // Checks content for match in each theme
+    themes.forEach((theme) => {
+        checkRegexp(0,theme.regexp)
+    })
+    
+    // sorts the matches array by start index
+    sort(regexpMatches)
+    console.log(regexpMatches)
+    
+    // inserts spans
+    styledMatches = regexpMatches.map(addSpan);
+    
+    // Pushes non styled content back to its right place
+    styledMatches.forEach((element, index) => {
+        finalArray.push(element.content);
+        if (index < styledMatches.length - 1) {
+            if (styledMatches[index].end !== styledMatches[index + 1 ].index) {
+                finalArray.push(
+                    content.substring(styledMatches[index].end, styledMatches[index + 1].index)
+                    )
+                }
+            } else {
+                if (styledMatches[index].end !== content.length) {
+                    finalArray.push(
+                        content.substring(styledMatches[index].end, content.length)
+                        )
+                    }
+                }
+            })
+            
+    // Converts array to string
+    styledContent = finalArray.join('')
+    
+    // injects string in content
+    target.innerHTML = styledContent
 })
-
-// sorts the matches array by start index
-sort(regexpMatches)
-console.log(regexpMatches)
-
-// inserts spans
-styledMatches = regexpMatches.map(addSpan);
-
-// Pushes non styled content back to its right place
-styledMatches.forEach((element, index) => {
-    finalArray.push(element.content);
-    if (index < styledMatches.length - 1) {
-        if (styledMatches[index].end !== styledMatches[index + 1 ].index) {
-            finalArray.push(
-                content.substring(styledMatches[index].end, styledMatches[index + 1].index)
-            )
-        }
-    } else {
-        if (styledMatches[index].end !== content.length) {
-            finalArray.push(
-                content.substring(styledMatches[index].end, content.length)
-            )
-        }
-    }
-})
-
-// Converts array to string
-styledContent = finalArray.join('')
-
-// injects string in content
-target.html(styledContent)

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TEST COLR</title>
+        <link rel="stylesheet" href="colr.css">
+    </head>
+    <body>
+        <h1>THIS IS A COLR TEST PAGE</h1>
+        <div>
+<pre class="colr">/*
+// insert content here
+      let lastIndex = 0;
+      top.keywordPatternRe.lastIndex = 0;
+      let match = top.keywordPatternRe.exec(modeBuffer);
+      let buf = "";
+
+      while (match) {
+        buf += modeBuffer.substring(lastIndex, match.index);
+        const data = keywordData(top, match);
+        if (data) {
+          const [kind, keywordRelevance] = data;
+          emitter.addText(buf);
+          buf = "";
+
+          relevance += keywordRelevance;
+          const cssClass = language.classNameAliases[kind] || kind;
+          emitter.addKeyword(match[0], cssClass);
+        } else {
+          buf += match[0];
+        }
+        lastIndex = top.keywordPatternRe.lastIndex;
+        match = top.keywordPatternRe.exec(modeBuffer);
+      }
+      buf += modeBuffer.substr(lastIndex);
+      emitter.addText(buf);
+    }
+</pre>
+        </div>
+        <script src="./colr.js"></script>
+    </body>
+</html>
