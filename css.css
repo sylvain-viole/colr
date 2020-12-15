@@ -1,0 +1,45 @@
+body {
+    color: white;
+    background-color: black;
+}
+
+
+.colr-kw-const {
+    color: red;
+}
+
+.colr-number {
+    color: blue;
+}
+
+.colr-ol-comment {
+    color: green;
+}
+
+.colr-ml-comment {
+    color: rgb(0, 71, 0);
+}
+
+.colr-kw {
+    color:blueviolet;
+}
+
+.colr-empty-function {
+    color: rgb(175, 175, 4);
+}
+
+.colr-string {
+    color: rgb(209, 105, 57);
+}
+
+.colr-function {
+    color: rgb(255, 187, 155);
+}
+
+.colr-html-arrow {
+    color: grey
+}
+
+.colr-html-tag {
+    color: rgb(10, 147, 238)
+}

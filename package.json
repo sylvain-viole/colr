@@ -1,0 +1,19 @@
+{
+  "name": "colr",
+  "version": "0.0.1",
+  "description": "code colorization project",
+  "main": "colr.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sylvavio/colr.git"
+  },
+  "author": "Sylvavio",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sylvavio/colr/issues"
+  },
+  "homepage": "https://github.com/sylvavio/colr#readme"
+}
