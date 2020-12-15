@@ -28,8 +28,6 @@ KNOWN ISSUES :
 
 */
 
- 
-
 /* Themes are applied from top to bottom, they are not stackable.
 So the order is important. */
 
@@ -90,35 +88,34 @@ const themes = [
     },
 ];
 
-
-let targets = document.querySelectorAll('.colr');
+let targets = document.querySelectorAll(".colr");
 
 /* ********************* FUNCTIONS ******************** */
 
 // defines intervall of content to scan
 function setInterval(cursor) {
     // sorts array of exclusion indexes
-    excludes.sort((a,b) => (a-b))
+    excludes.sort((a, b) => a - b);
     let start = cursor;
-    let end = content.length
-    if(excludes.length) {
+    let end = content.length;
+    if (excludes.length) {
         // defines START
         while (excludes.includes(start)) {
-            start++
-        };
+            start++;
+        }
         // defines END
         end = start;
-        if(end > Math.max.apply(null,excludes)) {
-            end = content.length
+        if (end > Math.max.apply(null, excludes)) {
+            end = content.length;
         } else {
-            let i = 0
-            while(end > excludes[i]) {
-                i++
+            let i = 0;
+            while (end > excludes[i]) {
+                i++;
             }
             end = excludes[i] - 1;
         }
     }
-    return {start: start, end: end};
+    return { start: start, end: end };
 }
 
 // scan content part for regexp
@@ -128,103 +125,125 @@ function checkRegexp(cursor, regexp) {
     let start = interval.start;
     let end = interval.end;
     // avoid substring bug when start = end
-    if(start === end) {
-        end++
+    if (start === end) {
+        end++;
     }
     // defines content part
     let contentToCheck = content.substring(start, end);
     // checks regexp match
-    let match = contentToCheck.match(regexp)
-    let absoluteEnd = end
-    if(match) {
+    let match = contentToCheck.match(regexp);
+    let absoluteEnd = end;
+    if (match) {
         // pushes indexes to exclude array
         let absoluteStart = start + match.index;
-        absoluteEnd = start + match.index + match[0].length
+        absoluteEnd = start + match.index + match[0].length;
         for (i = absoluteStart; i < absoluteEnd; i++) {
-            excludes.push(i)
+            excludes.push(i);
         }
         // pushes match to regexpMatches
-        regexpMatches.push({content: match[0], index: absoluteStart, end: absoluteStart + match[0].length, regexp: regexp});
-    } 
+        regexpMatches.push({
+            content: match[0],
+            index: absoluteStart,
+            end: absoluteStart + match[0].length,
+            regexp: regexp,
+        });
+    }
     // checks if end of content is reached
-    if(absoluteEnd < content.length) {
-        checkRegexp(absoluteEnd, regexp)
+    if (absoluteEnd < content.length) {
+        checkRegexp(absoluteEnd, regexp);
     }
 }
 
 // Applies style to content
-const addSpan = function(e) {
+function addSpan(e) {
     themes.forEach((theme) => {
         if (e.regexp === theme.regexp) {
-            e.content = theme.action(e.content)
+            e.content = theme.action(e.content);
         }
-    })
+    });
     return e;
 }
 
 // Sorts index
-function sort(array){
+function sort(array) {
     let changed;
-    do{
+    do {
         changed = false;
-        for(let i=0; i < array.length-1; i++) {
-            if(array[i].index > array[i+1].index) {
+        for (let i = 0; i < array.length - 1; i++) {
+            if (array[i].index > array[i + 1].index) {
                 let tmp = array[i];
-                array[i] = array[i+1];
-                array[i+1] = tmp;
+                array[i] = array[i + 1];
+                array[i + 1] = tmp;
                 changed = true;
             }
         }
-    } while(changed);
+    } while (changed);
     return array;
 }
 
 // inititiates
-let excludes = []
-let match = []
-let regexpMatches = []
-let finalArray = []
+let excludes;
+let match;
+let regexpMatches;
+let finalArray;
+let content;
+let styledContent;
 
 /* ********************* PROCESS ******************** */
 
-// loops in each DOM element matching classnass "colr".
+// loops in each DOM element matching classname "colr".
 targets.forEach((target) => {
+    // resets arrays
+    excludes = [];
+    match = [];
+    regexpMatches = [];
+    finalArray = [];
     content = target.innerHTML;
-    
-    
+    console.log(content);
     // Checks content for match in each theme
     themes.forEach((theme) => {
-        checkRegexp(0,theme.regexp)
-    })
-    
+        checkRegexp(0, theme.regexp);
+    });
+
     // sorts the matches array by start index
-    sort(regexpMatches)
-    console.log(regexpMatches)
-    
+    sort(regexpMatches);
+
     // inserts spans
     styledMatches = regexpMatches.map(addSpan);
-    
+
     // Pushes non styled content back to its right place
+
+    // handles case where content begins with non matched content
+    if (styledMatches[0].index > 0) {
+        finalArray.push(content.substring(0, styledMatches[0].index));
+    }
     styledMatches.forEach((element, index) => {
+        // pushes matched content to finalArray
         finalArray.push(element.content);
         if (index < styledMatches.length - 1) {
-            if (styledMatches[index].end !== styledMatches[index + 1 ].index) {
+            if (styledMatches[index].end !== styledMatches[index + 1].index) {
+                // Pushes non matched content to finalArray
                 finalArray.push(
-                    content.substring(styledMatches[index].end, styledMatches[index + 1].index)
+                    content.substring(
+                        styledMatches[index].end,
+                        styledMatches[index + 1].index
                     )
-                }
-            } else {
-                if (styledMatches[index].end !== content.length) {
-                    finalArray.push(
-                        content.substring(styledMatches[index].end, content.length)
-                        )
-                    }
-                }
-            })
-            
+                );
+            }
+        } else {
+            // Handles case where last index of styledMatches is reached’
+            if (styledMatches[index].end !== content.length) {
+                finalArray.push(
+                    content.substring(styledMatches[index].end, content.length)
+                );
+            }
+        }
+    });
+
+    console.log(finalArray);
     // Converts array to string
-    styledContent = finalArray.join('')
-    
+    styledContent = finalArray.join("");
+
     // injects string in content
-    target.innerHTML = styledContent
-})
+    target.innerHTML = styledContent;
+});

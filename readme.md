@@ -1,6 +1,6 @@
 # COLR
 
-**Colr is a simple code colorizer project.**
+**Colr is a simple code formater project.**
 
 ## Project :
 It takes any targeted DOM content, matches it with regexp, applies style and injects it back.
@@ -13,12 +13,15 @@ Its a work in progress.
 ## HOW TO :
 - add "colr.css" and "colr.js" to project,
 - link files to page,
-- add "colr" class whatever DOM element you want to scan ("pre" is recommended),
+- add "colr-container" class to whatever DOM element you want to format,
+- add "pre class="colr" inside the colr-container,
+- Write code inside
+- :)
 
 #
 
 ## Limitations :
-- Only parses JS right now
+- Only tested on JS and some PHP right now
 
 #
 
